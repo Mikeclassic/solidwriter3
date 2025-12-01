@@ -1,4 +1,4 @@
-import readingTime from 'reading-time';
+import getReadingTime from 'reading-time'; // FIXED: Renamed import to avoid conflict
 
 export interface SEOMetrics {
   wordCount: number;
@@ -27,7 +27,10 @@ export class SEOScoringEngine {
     const wordCount = words.length;
     
     // Calculate reading time
-    const readingStats = readingTime(content);
+    // FIXED: Use the renamed function 'getReadingTime'
+    const readingStats = getReadingTime(content);
+    
+    // Now we can safely use the variable name 'readingTime' for the number
     const readingTime = Math.ceil(readingStats.minutes);
     
     // Calculate readability score (simplified Flesch Reading Ease)
