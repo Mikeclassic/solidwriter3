@@ -101,6 +101,9 @@ model VoiceProfile {
   model        String   // Which embedding model was used (e.g., 'all-MiniLM-L6-v2')
   dimensions   Int      // Number of dimensions in the embedding vector
   
+  // ADDED: Back-relation to GenerationJob
+  generationJobs GenerationJob[]
+  
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   
