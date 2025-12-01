@@ -1,10 +1,10 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { prisma } from "@/lib/prisma"; // FIXED: Changed from @/lib/db
 
 export async function POST(req: Request) {
-  // We manually cast the session here to satisfy TypeScript
+  // Manual type cast to fix the 'user.id' error
   const session = await getServerSession(authOptions) as { 
     user?: { 
       id?: string 
@@ -18,7 +18,8 @@ export async function POST(req: Request) {
   try {
     const { name, description, elevenLabsId } = await req.json();
 
-    const voiceProfile = await db.voiceProfile.create({
+    // FIXED: Changed 'db' to 'prisma'
+    const voiceProfile = await prisma.voiceProfile.create({
       data: {
         userId: session.user.id,
         name,
