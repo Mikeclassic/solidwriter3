@@ -146,7 +146,7 @@ model GenerationJob {
   completedAt DateTime?
   
   // Relationships
-  content     GeneratedContent?
+  generatedContent     GeneratedContent?
   
   @@index([userId])
   @@index([status])
