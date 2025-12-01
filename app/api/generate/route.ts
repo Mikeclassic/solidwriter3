@@ -5,7 +5,15 @@ import { prisma } from '@/lib/prisma';
 import { v4 as uuidv4 } from 'uuid';
 
 export async function POST(request: NextRequest) {
-  const session = await getServerSession(authOptions);
+  // Add this cast to tell TypeScript exactly what the session looks like
+const session = await getServerSession(authOptions) as { 
+  user?: { 
+    id?: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  } 
+} | null;
   
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
