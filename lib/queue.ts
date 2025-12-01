@@ -1,7 +1,10 @@
-import { Queue, Worker, QueueScheduler, JobsOptions } from 'bullmq';
+import { Queue, Worker, JobsOptions } from 'bullmq';
 import IORedis from 'ioredis';
 
-const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379');
+// BullMQ requires maxRetriesPerRequest to be null
+const connection = new IORedis(process.env.REDIS_URL || 'redis://localhost:6379', {
+  maxRetriesPerRequest: null,
+});
 
 export interface GenerationJobData {
   jobId: string;
@@ -39,10 +42,7 @@ export const generationQueue = new Queue<GenerationJobData>('generation', {
   } as JobsOptions,
 });
 
-// Create queue scheduler for handling delayed jobs
-export const generationQueueScheduler = new QueueScheduler('generation', {
-  connection,
-});
+// REMOVED: generationQueueScheduler is no longer needed in BullMQ v5+
 
 // Worker for processing generation jobs
 export const generationWorker = new Worker<GenerationJobData>(
@@ -188,7 +188,7 @@ generationWorker.on('failed', (job, err) => {
 export function closeQueue() {
   return Promise.all([
     generationQueue.close(),
-    generationQueueScheduler.close(),
+    // generationQueueScheduler removed
     connection.quit(),
   ]);
 }
