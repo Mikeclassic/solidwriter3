@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { kimiClient } from '@/lib/kimi-client';
 import { voiceProfileEngine } from '@/lib/voice-profile';
