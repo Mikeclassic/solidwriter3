@@ -100,7 +100,8 @@ export class VoiceProfileEngine {
       profileId: profile.id,
       name: profile.name,
       similarity: this.cosineSimilarity(queryEmbedding, profile.embedding),
-      samples: JSON.parse(profile.samples),
+      // FIXED: Added fallback for potentially null samples
+      samples: JSON.parse(profile.samples || '[]'),
     }));
 
     // Sort by similarity and return top results
@@ -119,7 +120,8 @@ export class VoiceProfileEngine {
       throw new Error('Voice profile not found');
     }
 
-    return JSON.parse(profile.samples);
+    // FIXED: Added fallback here as well
+    return JSON.parse(profile.samples || '[]');
   }
 
   async updateVoiceProfile(
