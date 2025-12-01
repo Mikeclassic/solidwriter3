@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
+    // This fixes the "Module parse failed" error for onnxruntime
+    serverComponentsExternalPackages: ['@xenova/transformers', 'onnxruntime-node'],
+    
     optimizePackageImports: [
       "@radix-ui/react-dialog",
       "@radix-ui/react-dropdown-menu",
