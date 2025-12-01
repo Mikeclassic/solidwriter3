@@ -59,7 +59,14 @@ const session = await getServerSession(authOptions) as {
 }
 
 export async function GET(request: NextRequest) {
-  const session = await getServerSession(authOptions);
+const session = await getServerSession(authOptions) as { 
+  user?: { 
+    id?: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
+  } 
+} | null;
   
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
