@@ -4,7 +4,11 @@ import { authOptions } from '@/lib/auth';
 import { voiceProfileEngine } from '@/lib/voice-profile';
 
 export async function GET(request: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions) as { 
+  user?: { 
+    id?: string 
+  } 
+} | null;
   
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -20,7 +24,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions) as { 
+  user?: { 
+    id?: string 
+  } 
+} | null;
   
   if (!session?.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
