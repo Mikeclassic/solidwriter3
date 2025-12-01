@@ -1,61 +1,34 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
-import { voiceProfileEngine } from '@/lib/voice-profile';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { NextResponse } from "next/server";
+import { db } from "@/lib/db";
 
-export async function GET(request: NextRequest) {
+export async function POST(req: Request) {
+  // We manually cast the session here to satisfy TypeScript
   const session = await getServerSession(authOptions) as { 
-  user?: { 
-    id?: string 
-  } 
-} | null;
-  
+    user?: { 
+      id?: string 
+    } 
+  } | null;
+
   if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    const profiles = await voiceProfileEngine.getUserVoiceProfiles(session.user.id);
-    return NextResponse.json(profiles);
-  } catch (error) {
-    console.error('Get voice profiles error:', error);
-    return NextResponse.json({ error: 'Failed to fetch voice profiles' }, { status: 500 });
-  }
-}
+    const { name, description, elevenLabsId } = await req.json();
 
-export async function POST(request: NextRequest) {
-  const session = await getServerSession(authOptions) as { 
-  user?: { 
-    id?: string 
-  } 
-} | null;
-  
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  try {
-    const body = await request.json();
-    const { name, description, samples } = body;
-
-    if (!name || !samples || !Array.isArray(samples) || samples.length === 0) {
-      return NextResponse.json({ 
-        error: 'Name and samples array are required' 
-      }, { status: 400 });
-    }
-
-    const profileId = await voiceProfileEngine.createVoiceProfile({
-      name,
-      description,
-      samples,
-      userId: session.user.id,
+    const voiceProfile = await db.voiceProfile.create({
+      data: {
+        userId: session.user.id,
+        name,
+        description,
+        elevenLabsId,
+      },
     });
 
-    return NextResponse.json({ id: profileId, name, description });
+    return NextResponse.json(voiceProfile);
   } catch (error) {
-    console.error('Create voice profile error:', error);
-    return NextResponse.json({ 
-      error: 'Failed to create voice profile' 
-    }, { status: 500 });
+    return NextResponse.json({ error: 'Error creating voice profile' }, { status: 500 });
   }
 }
