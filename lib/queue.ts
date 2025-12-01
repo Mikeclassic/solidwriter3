@@ -42,22 +42,20 @@ export const generationQueue = new Queue<GenerationJobData>('generation', {
   } as JobsOptions,
 });
 
-// REMOVED: generationQueueScheduler is no longer needed in BullMQ v5+
-
 // Worker for processing generation jobs
 export const generationWorker = new Worker<GenerationJobData>(
   'generation',
   async (job) => {
     const { jobId, userId, topic, context, voiceProfileIds, outline, keywords } = job.data;
     
+    // FIXED: Moved imports HERE (outside try block) so they are available in catch block
+    const { kimiClient } = await import('./kimi-client');
+    const { voiceProfileEngine } = await import('./voice-profile');
+    const { seoScoringEngine } = await import('./seo-scoring');
+    const { prisma } = await import('./prisma');
+
     try {
       console.log(`Starting generation job ${jobId} for user ${userId}`);
-      
-      // Import dependencies here to avoid circular imports
-      const { kimiClient } = await import('./kimi-client');
-      const { voiceProfileEngine } = await import('./voice-profile');
-      const { seoScoringEngine } = await import('./seo-scoring');
-      const { prisma } = await import('./prisma');
       
       // Get voice profile samples if specified
       let voiceProfileSamples: string[] = [];
@@ -125,7 +123,7 @@ export const generationWorker = new Worker<GenerationJobData>(
     } catch (error) {
       console.error(`Generation job ${jobId} failed:`, error);
       
-      // Update job status to failed
+      // Now 'prisma' is available here because we imported it before the try block
       await prisma.generationJob.update({
         where: { id: jobId },
         data: {
@@ -188,7 +186,6 @@ generationWorker.on('failed', (job, err) => {
 export function closeQueue() {
   return Promise.all([
     generationQueue.close(),
-    // generationQueueScheduler removed
     connection.quit(),
   ]);
 }
