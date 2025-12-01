@@ -87,7 +87,7 @@ model VoiceProfile {
   id           String   @id @default(cuid())
   name         String   // User-defined name for the voice profile
   description  String?  // Optional description of the writing style
-  
+  elevenLabsId String
   // Writing samples as JSON array of strings
   samples      String   @db.Text // JSON array of writing samples
   
