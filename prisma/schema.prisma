@@ -87,9 +87,11 @@ model VoiceProfile {
   id           String   @id @default(cuid())
   name         String   // User-defined name for the voice profile
   description  String?  // Optional description of the writing style
-  elevenLabsId String
   
-  // FIXED: Made optional so you can create a profile without samples first
+  // FIXED: Added '?' to make this optional
+  elevenLabsId String?
+  
+  // Writing samples as JSON array of strings
   samples      String?   @db.Text 
   
   // pgvector embedding for similarity search
@@ -99,7 +101,6 @@ model VoiceProfile {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   // Metadata for the embedding
-  // FIXED: Made optional so you can create a profile without embedding data first
   model        String?   
   dimensions   Int?      
   
