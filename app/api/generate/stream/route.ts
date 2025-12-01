@@ -6,7 +6,11 @@ import { voiceProfileEngine } from '@/lib/voice-profile';
 import { prisma } from '@/lib/prisma';
 
 export async function GET(request: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions) as { 
+  user?: { 
+    id?: string 
+  } 
+} | null;
   
   if (!session?.user?.id) {
     return new Response('Unauthorized', { status: 401 });
