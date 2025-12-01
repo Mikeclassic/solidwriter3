@@ -88,8 +88,9 @@ model VoiceProfile {
   name         String   // User-defined name for the voice profile
   description  String?  // Optional description of the writing style
   elevenLabsId String
-  // Writing samples as JSON array of strings
-  samples      String   @db.Text // JSON array of writing samples
+  
+  // FIXED: Made optional so you can create a profile without samples first
+  samples      String?   @db.Text 
   
   // pgvector embedding for similarity search
   embedding    Float[]  // Array of floats for vector storage
@@ -98,8 +99,9 @@ model VoiceProfile {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   // Metadata for the embedding
-  model        String   // Which embedding model was used (e.g., 'all-MiniLM-L6-v2')
-  dimensions   Int      // Number of dimensions in the embedding vector
+  // FIXED: Made optional so you can create a profile without embedding data first
+  model        String?   
+  dimensions   Int?      
   
   // ADDED: Back-relation to GenerationJob
   generationJobs GenerationJob[]
