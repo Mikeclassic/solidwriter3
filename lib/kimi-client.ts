@@ -2,7 +2,8 @@ import OpenAI from 'openai';
 
 const openai = new OpenAI({
   baseURL: 'https://openrouter.ai/api/v1',
-  apiKey: process.env.OPENROUTER_API_KEY,
+  // FIXED: Added fallback to prevent build failure if env var is missing
+  apiKey: process.env.OPENROUTER_API_KEY || 'dummy-key', 
 });
 
 export interface KimiGenerationParams {
@@ -54,7 +55,6 @@ export class KimiClient {
       });
     }
 
-    // Fixed: Added 'as any' to bypass TypeScript union errors
     const completion = await openai.chat.completions.create({
       model: 'moonshotai/kimi-k2-thinking',
       messages,
@@ -82,7 +82,6 @@ export class KimiClient {
       }
     ];
 
-    // Fixed: Added 'as any' here too, otherwise the build will fail on this function next
     const completion = await openai.chat.completions.create({
       model: 'moonshotai/kimi-k2-thinking',
       messages,
@@ -110,7 +109,6 @@ export class KimiClient {
       });
     }
 
-    // Fixed: Cast stream to 'any' to ensure async iterator compatibility
     const stream = await openai.chat.completions.create({
       model: 'moonshotai/kimi-k2-thinking',
       messages,
